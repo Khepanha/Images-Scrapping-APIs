@@ -11,6 +11,7 @@ Change spreadsheet and sheet name to your own name
 sheet = client.open("Your Spreadsheet Name").sheet1
 undefined_word = client.open("Your Spreadsheet Name").worksheet('Your Sheet Name') //Undefined_Words
 ```
+* NOTE: All name must be fit to your spreadsheet!
 ## Requests
 Go to website and create new app and get you access_key by change "client_id" to your app access_key:
 ```python
