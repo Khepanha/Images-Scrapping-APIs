@@ -11,22 +11,22 @@ scope = ["https://spreadsheets.google.com/feeds",'https://www.googleapis.com/aut
 creds = ServiceAccountCredentials.from_json_keyfile_name("creds.json", scope)
 client = gspread.authorize(creds)
 
-sheet = client.open("Scrap Unsplash API python").sheet1
-undefined_word = client.open("Scrap Unsplash API python").worksheet('Undefined Word')
+sheet = client.open("test").sheet1
+undefined_word = client.open("test").worksheet('Undefined Word')
 words = sheet.col_values(2)
 words.pop(0)
 
 dotenv_file = dotenv.find_dotenv()
 dotenv.load_dotenv()
-row = 1
-start = os.environ.get('start')
-# for word in words:
-for i in range(int(start),len(words)):
+# start = int(os.environ.get('start'))
+# for i in range(start,len(words)):
+i = int(os.environ.get('start'))
+while i < len(words):
     try:
         img = []
-        req = requests.get("https://api.unsplash.com/search/photos?page=1&query="+words[i]+"&client_id=m64NRbuNadSCiuSf4wx_LbBhYe1nY6sdJIqkkPSEovA")
+        req = requests.get("https://api.unsplash.com/search/photos?page=1&query="+(words[i]).strip()+"&client_id=m64NRbuNadSCiuSf4wx_LbBhYe1nY6sdJIqkkPSEovA")
         data = req.json()
-        filename = str(words[i]) + ".jpg"
+        filename = str(words[i]).lower().strip() + ".jpg"
         for res in data['results']:
             if res['height'] > res['width']:
                 img.append(res)
@@ -35,15 +35,19 @@ for i in range(int(start),len(words)):
             last_res = max(img,key=lambda item:item['likes'])
             urllib2.urlretrieve(last_res['urls']['small'], "./images/"+filename)
             print (words[i] + " Downloaded! ✔")
+            i += 1
         else:
-            row += 1
+            row = int(os.environ.get('row'))
             undefined_word.update_cell(row,1,f"{words[i]}")
             undefined_word.update_cell(row,2,"Undefined")
             print (colored(words[i] + " Undefined! X",'red'))
-        os.environ['start'] = str(i+1)
+            os.environ['row'] = str(row + 1)
+            dotenv.set_key(dotenv_file, "row", os.environ.get('row'))
+            i +=  1
+        os.environ['start'] = str(i)
         dotenv.set_key(dotenv_file, "start", os.environ.get('start'))
     except:
-        print('waiting for 1 hour')
-        time.sleep(3900)
+        print (colored('waiting for 1 hour', 'yellow'))
+        time.sleep(3)
 
 print (colored('------------------\nSucessfully Download all your images!:)', 'green'))
