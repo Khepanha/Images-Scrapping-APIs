@@ -48,6 +48,6 @@ while i < len(words):
         dotenv.set_key(dotenv_file, "start", os.environ.get('start'))
     except:
         print (colored('waiting for 1 hour', 'yellow'))
-        time.sleep(3)
+        time.sleep(3900)
 
 print (colored('------------------\nSucessfully Download all your images!:)', 'green'))
